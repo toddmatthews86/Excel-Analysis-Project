@@ -55,8 +55,9 @@
 
  `
  =CALCULATE([totalRevenue],CROSSFILTER(orders[orderID],order_details[orderID],Both))
- `
- This combination of the CALCULATE and CROSSFILTER functions, allowed me to use measures in a bi-directional manner. This gave me more freedom  
+ `  
+ 
+ This combination of the CALCULATE and CROSSFILTER functions, allowed me to use measures in a bi-directional manner. This gave me more freedom
  in how I set up my pivot tables.
 
  The final table relationships. It is a bit messy and most likely involves some redundancy but it works.  
@@ -95,7 +96,7 @@ totalRevenue:=SUM(column_name)
 medianSale:=MEDIAN(column_name)
 
 unitsSold:=SUM(coumn_name)
-```
+```  
 These measures formed the basis for all of the information displayed in the Sales page.  
 From Power Pivot I initialised a pivot table where I used the order date in the rows to group revenue, median sales and units sold values by quarter.  
 Originally I had extracted the month from the order date in power query bu this wasnt used as Excel can do it within the pivot table for you.  
@@ -121,12 +122,12 @@ The final piece of the Sale page is a slicer filtering by employee name. Filteri
 over seeing either company wide performance or drilling down to see the performance of individual employees.
 
 **Insights**  
--Revenue has been steadily increasing over time. The last 3 quarters have all shown significant increase in revenue over the same period of the previous year.
--The median sale total has remained steady over the course of the analysis, indicating that the increased revenue is due to an increase in the   
-number of sales, rather than their size. Quantity over quality.
--Janet Leverling was the best performed employee both in total revenue and median sale for Q1 2015
 
-####Products
+- Revenue has been steadily increasing over time. The last 3 quarters have all shown significant increase in revenue over the same period of the previous year.  
+- The median sale total has remained steady over the course of the analysis, indicating that the increased revenue is due to an increase in the number of sales, rather than their size. Quantity over quality.  
+- Janet Leverling was the best performed employee both in total revenue and median sale for Q1 2015.  
+
+#### Products
 
 ![Products](https://github.com/user-attachments/assets/76fbdb86-8f96-4b3c-8b94-882625e4f203)
 
@@ -159,11 +160,12 @@ largest and filtered by bottom 5.
 The slicer on this page allowed the data to be further broken down by category.  
 Only the bar chart was not dynamic as that was already filtered by category, all other elements dynamically changed based on the slicer.
 
-**Insights**
--Beverages, Dairy Products, Confections and Seafood were easily the top 4 performing categories. They also the most number of available products.  
--While all categories have show a positive trend in revenue, 4 out of the 6 products in the Meat & Poultry category have been discontinued.  
-With only 2 remaining products, this category is unlikely to continue the trend with out an injection of new products.
--The top 5 products represent only 6% of the total products, but their $425k in revenue accounts for 35% of the total revenue.
+**Insights**  
+
+- Beverages, Dairy Products, Confections and Seafood were easily the top 4 performing categories. They also the most number of available products.  
+- While all categories have show a positive trend in revenue, 4 out of the 6 products in the Meat & Poultry category have been discontinued.  
+With only 2 remaining products, this category is unlikely to continue the trend with out an injection of new products.  
+- The top 5 products represent only 6% of the total products, but their $425k in revenue accounts for 35% of the total revenue.  
 
 
 
