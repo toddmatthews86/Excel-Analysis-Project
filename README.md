@@ -65,7 +65,7 @@
 
  ![Table Relationships](https://github.com/user-attachments/assets/597562f8-1987-4e28-8182-fcd05ded010b)
 
- #### Home Page
+ ## Home Page
  
  ![Home](https://github.com/user-attachments/assets/9a250248-a907-4c3c-959a-898fb7cb8626)
 
@@ -75,7 +75,7 @@
  Unlike the other pages, the Home page is not dynamic. It's purpose is simply to convey quickly and easily an important piece of information  
  from each of the pages. This information was drawn from the Pivot Tables created but for this purpose it was hardcoded in.
 
- #### Sales
+ ## Sales
 
  ![Sales](https://github.com/user-attachments/assets/773ddb3c-0670-4eaa-93ab-172391dc3683)
 
@@ -91,11 +91,11 @@
  table to create a measure for units sold.
 
  ```
-totalRevenue:=SUM(column_name)
+totalRevenue:=SUM(order_totals[orderTotal])
 
-medianSale:=MEDIAN(column_name)
+medianSale:=MEDIAN(order_totals[orderTotal])
 
-unitsSold:=SUM(coumn_name)
+unitsSold:=SUM(order_details[quantity])
 ```  
 These measures formed the basis for all of the information displayed in the Sales page.  
 From Power Pivot I initialised a pivot table where I used the order date in the rows to group revenue, median sales and units sold values by quarter.  
@@ -127,7 +127,7 @@ over seeing either company wide performance or drilling down to see the performa
 - The median sale total has remained steady over the course of the analysis, indicating that the increased revenue is due to an increase in the number of sales, rather than their size. Quantity over quality.  
 - Janet Leverling was the best performed employee both in total revenue and median sale for Q1 2015.  
 
-#### Products
+## Products
 
 ![Products](https://github.com/user-attachments/assets/76fbdb86-8f96-4b3c-8b94-882625e4f203)
 
@@ -160,12 +160,110 @@ largest and filtered by bottom 5.
 The slicer on this page allowed the data to be further broken down by category.  
 Only the bar chart was not dynamic as that was already filtered by category, all other elements dynamically changed based on the slicer.
 
-**Insights**  
+#### Insights  
 
 - Beverages, Dairy Products, Confections and Seafood were easily the top 4 performing categories. They also the most number of available products.  
 - While all categories have show a positive trend in revenue, 4 out of the 6 products in the Meat & Poultry category have been discontinued.  
 With only 2 remaining products, this category is unlikely to continue the trend with out an injection of new products.  
 - The top 5 products represent only 6% of the total products, but their $425k in revenue accounts for 35% of the total revenue.  
+
+## Customers
+
+![Customers](https://github.com/user-attachments/assets/21e02775-b7da-4513-81cc-430277475105)
+
+The main tables this page focused were the customers and products page. As the relationship between these tables needed to pass through multiple other tables,  
+I decided to create a new table in Power Query to have most of the necessary information in one place.  
+The new table took the orderID, customerID and orderTotals from the orders table and merged with the order_details table.  
+The result was a single table that included what products and the quantity each customer ordered.  
+There was also simple relationships with the customer and product tables for extracting more information about the products and customers.
+
+To build the pivot table, the company name filled the rows and the previously created measures of totalRevenue,  
+medianSale and unitsSold provided the values.  
+The table was sorted from highest to lowest in term of revenue and then filtered to only the top 10 results.
+
+![Customers top 10](https://github.com/user-attachments/assets/30dbe4ae-fcc4-4022-aac4-507c4c4129a0)
+
+Next I wanted to find ojut what products the top customers were purchasing, this required another table.  
+I loaded a new table into Power Query that contained just the companyID of the top 10 customers.  
+This was merged with the orders table to find only the orders for those customers.  
+Finally another merge with the order_details table added the products purchased in those orders.
+
+The pivot table used the produce name in the rows and the totalRevenue and unitsSold measures for values, filtered to the top 5.  
+The combo chart generated showed the revenue for each product as a column and the unit sold as a line chart but only showing markers and the line removed.  
+
+![Customers popular products](https://github.com/user-attachments/assets/e2db04e5-88fe-4fa6-a740-eee0373d6fb7)
+
+For the other chart I wanted to show the countries where the most revenue is generated from.  
+No new tables were required, simply a pivot table with the rows showing the country and totalRevenue again providing the values.    
+Rather than using yet another bar or column chart, I mixed things up and used a tree map and I filtered to the top 5 results as this number  
+allowed all labels to still be legible.  
+I chose this chart as the total amount wasn't as important to me as quickly seeing what countries were included as well as their ratio to each other and the total.   
+In addition if you hover the mouse over an area, a tool tip pops up showing the total for that area anyway.  
+
+![Customer countries](https://github.com/user-attachments/assets/e873a394-1930-48e7-b254-b21690876106)
+
+I made some KPI cards showing the number of total, active and new customers by loading the orders table into a sheet from Power Query and filtering by the relevant  
+dates for each catergory. I then calculated a count of the unique customerIDs.
+
+`
+=SUMPRODUCT(1/COUNTIF(customer_count[customerID],customer_count[customerID]))
+`  
+
+![Customer KPI](https://github.com/user-attachments/assets/94616d3e-b21f-4f7f-80d3-96cbd991387f)
+
+A timeline slicer was added to allow control over the time period.
+
+#### Insights
+
+- The top 10 customers generated 45% of the total revenue over the course of the entire analysis and 56% in Q1 2015.  
+- QUICK-Stop, Ernst Handel and Save-a-Lot Markets have consistantly featured in the top 10 customers and alone brought in 24% of the total revenue.  
+- USA, Germany and to a lesser extent Austria are the countries where most business originates. Further analysis could investigate how
+  much that is due to the number of customers or the size of the customers.
+- There seems to be a mix of high value, lower volume and low value, high volume products purchased by the top customers. Generally though it is a high value product in the #1 spot.
+
+## Shipping
+
+![Shipping](https://github.com/user-attachments/assets/c9ec5893-ac9a-4209-af43-c17c7980f3b5)
+
+The major element of the Shipping page is the pivot table. I included this table because there is a number of performance indicators I wanted to include to compare  
+the shipping companies. To show them all in charts would either make one big messy charts to too many smaller charts.  
+I created another new table in Power Query by merging any data relevant to shipping so I could pick and choose what I needed.  
+A column showing time to ship was created by using the Subtract Days function. A funtion that was also used in conjuction with a conditional column to assign  
+each order a shipping status of "ON TIME", "LATE" or "AWAITING SHIPPING".  
+Measures were created for average freight per order, freight-revenue ratio and average days to ship.
+
+The pivot table was constructed the same way as the one in the Sales page. The rows were grouped by quarter, all of my measures provided the values and a second
+instance of each measure was displayed as a difference from the previous year. Conditional formatting was used to used to highlight favourable/unfavourable differences.
+
+![Shipping Table](https://github.com/user-attachments/assets/146f79b2-12fa-4d28-bdc8-7a5431cf0507)
+
+The chart shows the average freight cost per order over time and the data is the same as that column in the pivot table.  
+I just needed to create a separate pivot table in order to only visualise that data.  
+
+![Shipping ave freight](https://github.com/user-attachments/assets/45858452-4abc-44da-bc0d-0252882e0421)
+
+The last pivot table simply took a count of the shipping status column that was created.  
+Visualising this data was ineffective as the values only varied slightly around a 95:5 ratio of ontime to late shipments.  
+For this reason I chose to only show the late shipment rate as a KPI card.
+
+![Shipping late](https://github.com/user-attachments/assets/2c7cf950-4e0e-40ff-823a-dc3989a561c3)
+
+To add some dynamic control, 2 slicers were added to this page. One, to change between shipping company which is an obvious  
+choice for a Shipping analysis.  
+
+The other altered the country of destination. This was to show both how shipping volume compared between countries but also  
+how the freight costs varied.
+
+#### Insights
+
+- Of the 3 companies used, there was no clear cut best option.  
+   - United Package shipped the greatest olume but also had the highest average freight cost and freight-revenue ratio.  
+   - Speedy Express had the lowest freight-revenue ratio but despite the name, was the slowest ship off orders and most likely to be late in doing so.  
+   - Federal Shipping was the most reliable and a cheaper option but shipped low volumes outside the US.  
+- Across all companies, the average freight cost has remained steady for the past 12 months. 
+
+
+
 
 
 
